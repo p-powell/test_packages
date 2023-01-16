@@ -3,8 +3,11 @@ name: build package 1
 on:
   push:
     branches: [ main ]
+    paths: 
+     - ./package1/** 
   pull_request: # run ci on all pull requests
-
+    paths: 
+     - ./package1/** 
 jobs:
   build:
     runs-on: ubuntu-22.04
