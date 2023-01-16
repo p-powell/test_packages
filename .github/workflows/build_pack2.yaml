@@ -37,7 +37,7 @@ jobs:
     - name: Install python depdendencies
       run: poetry install
 
-    - name: Lint with flake8
+    - name: Lint with pylint
       run: |
        poetry run pylint .
 
