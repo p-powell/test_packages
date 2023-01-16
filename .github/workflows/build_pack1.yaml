@@ -37,10 +37,7 @@ jobs:
     - name: Install python depdendencies
       run: poetry install
 
-    - name: Lint with flake8
+    - name: Lint with pylint
       run: |
-        echo "$PWD"
-        ls
         poetry run pylint package1
-        # poetry run flake8 ingest_lib --max-complexity=10 --max-line-length=127
     
