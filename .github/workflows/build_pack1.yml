@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-22.04
     defaults:
       run:
-        working-directory: ./package1
+        working-directory: ./package1/package1/
     if: github.event.pull_request.draft == false
     strategy:
       matrix:
