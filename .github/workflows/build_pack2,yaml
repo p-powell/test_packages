@@ -1,0 +1,41 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request: # run ci on all pull requests
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./package2/package2/
+    if: github.event.pull_request.draft == false
+    strategy:
+      matrix:
+        python-version: [3.8]
+        poetry-version: [1.2.2]
+
+    steps:
+    - name: Code checkout
+      uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Poetry
+      uses: abatilo/actions-poetry@v2.1.6
+      with:
+        poetry-version: ${{ matrix.poetry-version }}
+
+    - name: Install python depdendencies
+      run: poetry install
+
+    - name: Lint with flake8
+      run: |
+        poetry run pylint .
+        # poetry run flake8 ingest_lib --max-complexity=10 --max-line-length=127
+    
