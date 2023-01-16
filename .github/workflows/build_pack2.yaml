@@ -7,7 +7,7 @@ on:
      - ./package2/** 
   pull_request: # run ci on all pull requests
     paths: 
-     - ./package1/** 
+     - ./package2/** 
 jobs:
   build:
     runs-on: ubuntu-22.04
