@@ -4,10 +4,10 @@ on:
   push:
     branches: [ main ]
     paths: 
-     - ./package2/** 
+     - package2/** 
   pull_request: # run ci on all pull requests
     paths: 
-     - ./package2/** 
+     - package2/** 
 jobs:
   build:
     runs-on: ubuntu-22.04
