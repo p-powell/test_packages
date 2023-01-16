@@ -1,2 +1,2 @@
-def print_test(s):
-    print(f"TESTING2: {s}")
+def print_test(sh):
+    print(f"TESTING2: {sh}")
