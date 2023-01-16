@@ -36,7 +36,7 @@ jobs:
 
     - name: Lint with flake8
       run: |
-        cd package2
+        pwd
         poetry run pylint .
         # poetry run flake8 ingest_lib --max-complexity=10 --max-line-length=127
     
