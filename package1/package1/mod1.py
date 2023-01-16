@@ -1,3 +1,3 @@
-def print_test(v):
-    print(f"TESTING: {v}")
+def print_test(g):
+    print(f"TESTING: {g}")
  
