@@ -1,13 +1,19 @@
 name: build package 1
 
-on:
+#on:
+  #push:
+    #branches: [ main ]
+    #paths: 
+#     - package1/** 
+  #pull_request: # run ci on all pull requests
+    #paths: 
+#     - package1/** 
+on: 
   push:
-    branches: [ main ]
+    tags:
+      - v*
     paths: 
-     - package1/** 
-  pull_request: # run ci on all pull requests
-    paths: 
-     - package1/** 
+      - package1/** 
 jobs:
   build:
     runs-on: ubuntu-22.04
