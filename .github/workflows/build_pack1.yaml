@@ -42,4 +42,4 @@ jobs:
         poetry run pylint package1
     
     - name: It is done
-    run: echo 'Testing;
+    run: echo 'Testing'
