@@ -26,7 +26,12 @@ jobs:
     - name: git_status
       run: |
          git status
-
+    - name: Extract branch name
+      shell: bash
+      run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+    - name: echo_branch
+      run: |
+         echo $GITHUB_OUTPUT
     - name: setup python v${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
