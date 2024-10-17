@@ -1,0 +1,90 @@
+name: build and deploy ingest_lib
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    if: github.event.pull_request.draft == false
+    strategy:
+      matrix:
+        python-version: [3.11]
+        poetry-version: [1.2.2]
+
+    steps:
+    - name: set environment variables
+      run: |
+        echo "BUILD_ENV=$(echo dataingest/dev/config)" >> $GITHUB_ENV
+        echo "AWS_DEFAULT_REGION=$(echo us-east-1)" >> $GITHUB_ENV
+
+    - name: code checkout
+      uses: actions/checkout@v3
+
+    - name: setup python v${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: update and install apt dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get full-upgrade -y
+        sudo apt-get install -y curl unzip
+
+    - name: install poetry
+      uses: abatilo/actions-poetry@v2.1.6
+      with:
+        poetry-version: ${{ matrix.poetry-version }}
+
+    - name: install python depdendencies via poetry
+      run: poetry install
+
+    - name: lint using pylint
+      run: |
+        # poetry run pylint ingest_lib
+
+    - name: configure aws credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: start docker containers needed by pytest
+      run: docker compose up -d zookeeper kafka postgres
+
+    - name: run pytest
+      run: |
+        poetry run pytest
+
+    - name: stop docker containers needed by pytest
+      if: always()
+      run: docker compose down
+
+
+    - name: update version in pyproject.toml
+      env:
+        POETRY_NO_INTERACTION: 1
+      run: |
+        poetry version "${{ github.ref_name }}"
+        git add pyproject.toml
+        git commit -m "auto - bump project version to ${{ github.ref_name }}"
+
+    - name: push changes
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+      run: |
+        git push https://${{ env.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
+
+    - name: build repository package
+      run: |
+        poetry build
+
+    - name: publish packages to code artifact
+      run: |
+        poetry config repositories.locdata https://locdata-427153636945.d.codeartifact.us-east-1.amazonaws.com/pypi/locdata-pypi/
+        export CODEARTIFACT_AUTH_TOKEN=`aws --region us-east-1 codeartifact get-authorization-token --domain locdata --domain-owner 427153636945 --query authorizationToken --output text`
+        poetry publish --repository locdata --username aws --password ${CODEARTIFACT_AUTH_TOKEN}
