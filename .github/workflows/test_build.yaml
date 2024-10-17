@@ -13,8 +13,13 @@ jobs:
       matrix:
         python-version: [3.11]
         poetry-version: [1.2.2]
+    
 
     steps:
+    - name: print_env
+      run: |
+         printenv
+    
     - name: code checkout
       uses: actions/checkout@v3
 
