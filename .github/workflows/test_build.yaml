@@ -33,6 +33,7 @@ jobs:
       env:
         POETRY_NO_INTERACTION: 1
       run: |
+        cd package1
         poetry version "${{ github.ref_name }}"
         git add pyproject.toml
         git commit -m "auto - bump project version to ${{ github.ref_name }}"
