@@ -35,6 +35,8 @@ jobs:
       run: |
         cd package1
         poetry version "${{ github.ref_name }}"
+        git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+        git config --global user.email "ppowell@lightboxre.com"
         git add pyproject.toml
         git commit -m "auto - bump project version to ${{ github.ref_name }}"
 
