@@ -1,0 +1,73 @@
+name: Manual Build Event
+
+on:
+   workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build Type'
+        required: true
+        default: 'prepatch'
+        type: choice
+        options:
+        - 'patch'
+        - 'minor'
+        - 'major'
+        - 'prepatch'
+        - 'preminor'
+        - 'premajor'
+        - 'prerelease'
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    if: github.event.pull_request.draft == false
+    strategy:
+      matrix:
+        python-version: [3.11]
+        poetry-version: [1.2.2]
+
+    steps:
+    - name: what version
+      run: |
+        echo ${{ github.event.inputs.build_type }}
+    - name: Code checkout
+      uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Update and Install apt dependencies
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y curl unzip
+        # curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && unzip awscliv2.zip && sudo ./aws/install
+
+    - name: Install Poetry
+      uses: abatilo/actions-poetry@v2.1.6
+      with:
+        poetry-version: ${{ matrix.poetry-version }}
+
+    - name: Install python depdendencies
+      run: poetry install
+
+    - name: Lint with pylint
+      run: |
+        # poetry run pylint ingest_lib
+        # poetry run flake8 ingest_lib --max-complexity=11 --max-line-length=127
+    
+    - name: Test with pytest
+      run: |
+        # poetry run pytest
+
+    - name: Bump Version
+      env: 
+        CI_COMMIT_MESSAGE: CI Version Bump
+        CI_COMMIT_AUTHOR: CI
+      run: |
+        poetry version ${{ github.event.inputs.build_type }}
+        git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+        git config --global user.email "locdata-dataingest-service@lightboxre.com"
+        git commit -a -m "${{ env.CI_COMMIT_MESSAGE }}"
+        git push
+    
