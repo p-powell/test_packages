@@ -48,6 +48,7 @@ jobs:
         CI_COMMIT_MESSAGE: CI Version Bump
         CI_COMMIT_AUTHOR: CI
       run: |
+        cd package1
         poetry version ${{ github.event.inputs.build_type }}
         git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
         git config --global user.email "locdata-dataingest-service@lightboxre.com"
