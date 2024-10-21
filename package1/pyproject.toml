@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "package1"
-version = "1.0.0"
+version = "2.0.0"
 description = ""
 authors = ["p-powell <ppowell@dmtispatial.com>"]
 
