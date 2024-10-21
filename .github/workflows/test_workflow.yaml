@@ -31,8 +31,8 @@ jobs:
         echo ${{ github.event.inputs.build_type }}
     - name: Code checkout
       uses: actions/checkout@v4
-      with: 
-         persist-credentials: false
+      #with: 
+       #  persist-credentials: false
 
     - name: git_status
       run: |
